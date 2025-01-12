@@ -40,10 +40,6 @@ window {
     color: @text;
 }
 
-window.content {
-    background: rgba(255, 0, 0, 1);
-}
-
 tooltip {
     background: @base;
     border-radius: 10px;

@@ -1,12 +1,12 @@
 use gio::prelude::*;
-use gtk4::gdk;
 use gtk4::prelude::{ApplicationExt, *};
+use gtk4::{gdk, STYLE_PROVIDER_PRIORITY_APPLICATION};
 use gtk4_layer_shell::{Edge, Layer, LayerShell};
 
 fn load_css() {
     let display = gdk::Display::default().expect("Could not get default display.");
     let provider = gtk4::CssProvider::new();
-    let priority = gtk4::STYLE_PROVIDER_PRIORITY_APPLICATION;
+    let priority = STYLE_PROVIDER_PRIORITY_APPLICATION;
 
     provider.load_from_data(include_str!("../styles/style.css"));
     gtk4::style_context_add_provider_for_display(&display, &provider, priority);
@@ -48,13 +48,14 @@ fn activate(application: &gtk4::Application) {
     }
 
     // Set up a widget
-    //let label = gtk4::Label::new(Some(""));
-    //label.set_markup("<span font_desc=\"10.0\">GTK Layer Shell example!</span>");
-    //window.set_child(Some(&label));
-    let content = gtk4::Box::new(gtk4::Orientation::Horizontal, 0);
+    let content = gtk4::FlowBox::new();
     content.set_hexpand(true);
     content.set_vexpand(true);
-    //content.set_spacing(20);
+    content.set_homogeneous(true);
+    // Set automatic spacing between children (space-between)
+    content.set_orientation(gtk4::Orientation::Vertical);
+    // Disable selection (native for gtk4::FlowBox)
+    content.set_selection_mode(gtk4::SelectionMode::None);
     content.set_css_classes(&["content"]);
 
     let left_section = gtk4::Box::new(gtk4::Orientation::Horizontal, 0);
@@ -62,15 +63,21 @@ fn activate(application: &gtk4::Application) {
     let center_section = gtk4::Box::new(gtk4::Orientation::Horizontal, 0);
 
     let label = gtk4::Label::new(Some("GTK Layer Shell example [LEFT]!"));
+    label.set_margin_start(5);
+    label.set_margin_end(5);
     left_section.append(&label);
     let label = gtk4::Label::new(Some("GTK Layer Shell example [CENTER]!"));
+    label.set_margin_start(5);
+    label.set_margin_end(5);
     center_section.append(&label);
     let label = gtk4::Label::new(Some("GTK Layer Shell example [RIGHT]!"));
+    label.set_margin_start(5);
+    label.set_margin_end(5);
     right_section.append(&label);
 
-    content.append(&left_section);
-    content.append(&center_section);
-    content.append(&right_section);
+    content.insert(&left_section, -1);
+    content.insert(&center_section, -1);
+    content.insert(&right_section, -1);
 
     left_section.set_halign(gtk4::Align::Start);
     center_section.set_halign(gtk4::Align::Center);
