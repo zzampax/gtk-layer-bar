@@ -3,6 +3,11 @@ use gtk4::prelude::{ApplicationExt, *};
 use gtk4::{gdk, STYLE_PROVIDER_PRIORITY_APPLICATION};
 use gtk4_layer_shell::{Edge, Layer, LayerShell};
 
+fn hour() -> String {
+    let now = chrono::Local::now();
+    now.format("%a %d-%m-%Y -> %H:%M:%S (%Z)").to_string()
+}
+
 fn load_css() {
     let display = gdk::Display::default().expect("Could not get default display.");
     let provider = gtk4::CssProvider::new();
@@ -62,18 +67,18 @@ fn activate(application: &gtk4::Application) {
     let right_section = gtk4::Box::new(gtk4::Orientation::Horizontal, 0);
     let center_section = gtk4::Box::new(gtk4::Orientation::Horizontal, 0);
 
-    let label = gtk4::Label::new(Some("GTK Layer Shell example [LEFT]!"));
-    label.set_margin_start(5);
-    label.set_margin_end(5);
-    left_section.append(&label);
-    let label = gtk4::Label::new(Some("GTK Layer Shell example [CENTER]!"));
-    label.set_margin_start(5);
-    label.set_margin_end(5);
-    center_section.append(&label);
-    let label = gtk4::Label::new(Some("GTK Layer Shell example [RIGHT]!"));
-    label.set_margin_start(5);
-    label.set_margin_end(5);
-    right_section.append(&label);
+    let label_left = gtk4::Label::new(Some("GTK Layer Shell example [LEFT]!"));
+    label_left.set_margin_start(5);
+    label_left.set_margin_end(5);
+    left_section.append(&label_left);
+    let label_center = gtk4::Label::new(Some("GTK Layer Shell example [CENTER]!"));
+    label_center.set_margin_start(5);
+    label_center.set_margin_end(5);
+    center_section.append(&label_center);
+    let label_right = gtk4::Label::new(Some("GTK Layer Shell example [RIGHT]!"));
+    label_right.set_margin_start(5);
+    label_right.set_margin_end(5);
+    right_section.append(&label_right);
 
     content.insert(&left_section, -1);
     content.insert(&center_section, -1);
@@ -84,6 +89,12 @@ fn activate(application: &gtk4::Application) {
     right_section.set_halign(gtk4::Align::End);
 
     window.set_child(Some(&content));
+
+    glib::timeout_add_seconds_local(1, move || {
+        label_center.set_text(hour().as_str());
+        glib::ControlFlow::Continue
+    });
+
     window.show()
 }
 
